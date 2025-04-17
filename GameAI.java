@@ -22,7 +22,7 @@ public class GameAI {
             }
         }
         System.out.println("AI difficulty: " + difficulty);
-        System.out.println("AI move: " + position[0] + ", " + position[1]);
+        System.out.println("AI move: " + position[0] + ", " + position[1] + ", mode:" + position[2]);
         return position;
     }
 

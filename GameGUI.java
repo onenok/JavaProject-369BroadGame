@@ -824,7 +824,7 @@ public final class GameGUI extends JFrame {
         + "\n" 
         + (game.isBot(2) ? "AI" : "玩家") + "2得分: " + game.getPlayerScores()[1] 
         + "\n\n" 
-        + (winner == 0 ? "平手！" : (game.isBot(winner) ? "AI" : "玩家") + (winner + 1) + "獲勝！");
+        + (winner == -1 ? "平手！" : (game.isBot(winner) ? "AI" : "玩家") + (winner + 1) + "獲勝！");
 
         int option = JOptionPane.showConfirmDialog(this,
                 message + "\n\n是否要再玩一局？",

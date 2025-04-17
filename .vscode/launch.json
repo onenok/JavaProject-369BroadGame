@@ -9,6 +9,13 @@
             "name": "bg369",
             "request": "launch",
             "mainClass": "bg369",
+            "projectName": "JavaProject-369BroadGame_63da552b"
+        },
+        {
+            "type": "java",
+            "name": "bg369",
+            "request": "launch",
+            "mainClass": "bg369",
             "projectName": "JavaProject-369BroadGame_1e7cea03"
         },
         {

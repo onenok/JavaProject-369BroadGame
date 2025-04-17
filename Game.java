@@ -306,7 +306,8 @@ public final class Game {
 
     private int maxScorePlayer() {
         int maxScore = 0;
-        int maxScorePlayer = 0;
+        int maxScorePlayer = -1;
+        System.out.println("playerScores: " + playerScores);
         for (int i = 0; i < 2; i++) {
             if (playerScores[i] == maxScore) {
                 maxScorePlayer = -1;
