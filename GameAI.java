@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 public class GameAI {
@@ -11,18 +10,20 @@ public class GameAI {
     }   
 
     @SuppressWarnings("CallToPrintStackTrace")
-    public int[] getBotMove() {
+    public int[] getBotMove(boolean isGUI) {
         List<int[]> empty = game.getEmpty();
         int[] position = new int[3]; //[0] = row, [1] = col, [2] = moveType(1 = random, 2 = best)
         switch (difficulty) {
             case 1 -> position = easyMode(empty);
             case 2 -> position = mediumMode(empty);
-            case 3 -> position = hardMode(empty);
+            case 3 -> position = hardMode(empty, isGUI);
             default -> {
             }
         }
-        System.out.println("AI difficulty: " + difficulty);
-        System.out.println("AI move: " + position[0] + ", " + position[1] + ", mode:" + position[2]);
+        if (isGUI) {
+            System.out.println("AI difficulty: " + difficulty);
+            System.out.println("AI move: " + position[0] + ", " + position[1] + ", mode:" + (position[2] == 1 ? "random" : "bestMove") + "\n");
+        }
         return position;
     }
 
@@ -44,7 +45,7 @@ public class GameAI {
         int maxScore = 0;
         
         for (int[] cell : empty) {
-            int[][] tempBoard = copyBoard();
+            int[][] tempBoard = copyBoard(game.getBoardState());
             int score = calculatePotentialScore(cell[0], cell[1], 2, tempBoard); //此player數值代表AI
             if (score > maxScore) {
                 maxScore = score;
@@ -61,55 +62,39 @@ public class GameAI {
         }
     }
 
-    private int[] hardMode(List<int[]> empty) {
+    private int[] hardMode(List<int[]> empty, boolean isGUI) {
         // 1. 尋找能得最高分的位置
         int[] bestMove = null;
-        int maxScore = 0;
+        double maxScore = -99;
         for (int[] cell : empty) {
-            int[][] tempBoard = copyBoard();
+            int[][] tempBoard = copyBoard(game.getBoardState());
             int score = calculatePotentialScore(cell[0], cell[1], 2, tempBoard); //此player數值代表AI
             int opponentScore = 0;
             // 2. 考慮對手可能得分的機會
             for (int[] cell2 : empty) {
-                int tempScore = calculatePotentialScore(cell2[0], cell2[1], 1, tempBoard); //此player數值代表玩家
+                int[][] opponentTempBoard = copyBoard(tempBoard);
+                int tempScore = calculatePotentialScore(cell2[0], cell2[1], 1, opponentTempBoard); //此player數值代表玩家
                 if (tempScore > opponentScore) {
                     opponentScore = tempScore;
                 }
             }
             // 3. 綜合評估
-            int totalScore = score - (int)(opponentScore * (empty.size() > 81/2 ? 0.3 : 0.7));
-            
+            double totalScore = score - (opponentScore * (empty.size() > 81/2 ? 0.3 : 0.7));
             if (totalScore > maxScore) {
                 maxScore = totalScore;
                 bestMove = cell;
-            }
-        }
-        
-        // 4. 如果沒有得分機會，選擇戰略位置
-        if (bestMove == null) {
-            // 優先選擇中心或角落
-            List<int[]> priorityCells = new ArrayList<>();
-            for (int[] cell : empty) {
-                if (((cell[0] >= 3 && cell[0] <= 5) && (cell[1] >= 3 && cell[1] <= 5)) || // 中心
-                    (((cell[0] >= 0 && cell[0] <= 2) || (cell[0] >= 6 && cell[0] <= 8)) && ((cell[1] >= 0 && cell[1] <= 2) || (cell[1] >= 6 && cell[1] <= 8)))) { // 角落
-                    priorityCells.add(cell);
+                if (isGUI) {
+                    System.out.println("maxScore: " + maxScore);
                 }
             }
-            bestMove = !priorityCells.isEmpty() ? 
-                       priorityCells.get(new Random().nextInt(priorityCells.size())) : 
-                       empty.get(new Random().nextInt(empty.size()));
-            return new int[]{bestMove[0], bestMove[1], 1};
         }
-        else {
-            return new int[]{bestMove[0], bestMove[1], 2};
-        }
+        return new int[]{bestMove[0], bestMove[1], 2};
     }
 
-    private int[][] copyBoard() {
-        int[][] boardState = game.getBoardState();
-        int[][] copy = new int[boardState.length][boardState[0].length];
-        for (int i = 0; i < boardState.length; i++) {
-            System.arraycopy(boardState[i], 0, copy[i], 0, boardState[i].length);
+    private int[][] copyBoard(int[][] board) {
+        int[][] copy = new int[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            System.arraycopy(board[i], 0, copy[i], 0, board[i].length);
         }
         return copy;
     }

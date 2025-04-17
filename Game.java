@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Random;
 import javax.swing.SwingWorker;
 import myutil.PrintUtils;
@@ -149,9 +150,9 @@ public final class Game {
             // 獲取玩家輸入
             if (isBot(currentPlayer)) {
                 if (currentPlayer == 1) {
-                    move = gameAI1.getBotMove();
+                    move = gameAI1.getBotMove(false);
                 } else {
-                    move = gameAI2.getBotMove();
+                    move = gameAI2.getBotMove(false);
                 }
             }
             else {
@@ -300,20 +301,20 @@ public final class Game {
         if (winner == -1) {
             PrintUtils.print("遊戲結束，平手！", new PVo(10));
         } else {
-            PrintUtils.print("遊戲結束，玩家" + (winner + 1) + "獲勝！", new PVo(10));
+            PrintUtils.print("遊戲結束，玩家" + (winner) + "獲勝！", new PVo(10));
         }
     }
 
     private int maxScorePlayer() {
         int maxScore = 0;
         int maxScorePlayer = -1;
-        System.out.println("playerScores: " + playerScores);
+        System.out.println("playerScores: " + Arrays.toString(playerScores));
         for (int i = 0; i < 2; i++) {
             if (playerScores[i] == maxScore) {
                 maxScorePlayer = -1;
             } else if (playerScores[i] > maxScore) {
                 maxScore = playerScores[i];
-                maxScorePlayer = i;
+                maxScorePlayer = i+1;
             }
         }
         return maxScorePlayer;
@@ -408,8 +409,7 @@ public final class Game {
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    int[] move = gameAI1.getBotMove();
-                    System.out.println("AI1 move: " + move[0] + "," + move[1]);
+                    int[] move = gameAI1.getBotMove(true);
                     gui.handleButtonClick(move[0], move[1]);
                     return null;
                 }
@@ -419,8 +419,7 @@ public final class Game {
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    int[] move = gameAI2.getBotMove();
-                    System.out.println("AI2 move: " + move[0] + "," + move[1]);
+                    int[] move = gameAI2.getBotMove(true);
                     gui.handleButtonClick(move[0], move[1]);
                     return null;
                 }
