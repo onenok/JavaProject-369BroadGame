@@ -1,0 +1,35 @@
+{
+    // 使用 IntelliSense 以得知可用的屬性。
+    // 暫留以檢視現有屬性的描述。
+    // 如需詳細資訊，請瀏覽: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "bg369",
+            "request": "launch",
+            "mainClass": "bg369",
+            "projectName": "JavaProject-369BroadGame_1e7cea03"
+        },
+        {
+            "type": "java",
+            "name": "bg369",
+            "request": "launch",
+            "mainClass": "bg369",
+            "projectName": "java project_c4dfc0a"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "bg369",
+            "request": "launch",
+            "mainClass": "bg369",
+            "projectName": "project_1c6c04ca"
+        }
+    ]
+}
