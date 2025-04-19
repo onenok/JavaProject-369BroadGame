@@ -1,3 +1,6 @@
+package game;
+import game.ai.GameAI;
+import game.gui.GameGUI;
 import java.util.Arrays;
 import java.util.Random;
 import javax.swing.SwingWorker;
@@ -108,6 +111,7 @@ public final class Game {
             isBot[1] = 1;
         }
     }
+    @SuppressWarnings("CallToPrintStackTrace")
     public void consolePlay() {
         int mode = PrintUtils.inputAs(Integer.class, "請選擇遊玩模式(1: 和Bot對戰、2: 和朋友一起玩、3: 觀看ai互鬥): ").get(0);
         if (mode == 1) {
@@ -153,6 +157,11 @@ public final class Game {
                     move = gameAI1.getBotMove(false);
                 } else {
                     move = gameAI2.getBotMove(false);
+                }
+                try {
+                    Thread.sleep(700);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
             else {
@@ -336,7 +345,7 @@ public final class Game {
         // 處理移動並計算得分
         int score = board.handleConsecutive(row, col, currentPlayer);
         playerScores[currentPlayer - 1] += score;
-
+        displayGameStatus();
         // 檢查遊戲是否結束
         if (isBoardFull()) {
             gameOver = true;

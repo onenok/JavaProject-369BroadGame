@@ -1,3 +1,4 @@
+package game.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Path2D;
@@ -5,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 import javax.swing.border.*;
+
+import game.Game;
 
 public final class GameGUI extends JFrame {
     private Game game;

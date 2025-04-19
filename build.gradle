@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.beryx.jlink' version '2.25.0'
+}
+
+repositories {
+    mavenCentral() 
+}
+
+dependencies {
+}
+
+application {
+    mainClass = 'bg369.bg369' 
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'bg369.bg369' 
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "UTF-8"
+}
+
+run {
+    systemProperty "file.encoding", "UTF-8"
+}

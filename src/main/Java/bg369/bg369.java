@@ -1,3 +1,5 @@
+package bg369;
+import game.Game;
 import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
 

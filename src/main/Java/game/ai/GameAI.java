@@ -1,3 +1,5 @@
+package game.ai;
+import game.Game;
 import java.util.List;
 import java.util.Random;
 public class GameAI {

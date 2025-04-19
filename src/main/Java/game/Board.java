@@ -1,3 +1,4 @@
+package game;
 public class Board {
     private final int[][] grid; // 9x9的棋盤，0表示空位，1表示玩家1，2表示玩家2
     private final int BOARD_SIZE;
