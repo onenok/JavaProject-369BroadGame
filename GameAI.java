@@ -63,14 +63,14 @@ public class GameAI {
     }
 
     private int[] hardMode(List<int[]> empty, boolean isGUI) {
-        // 1. 尋找能得最高分的位置
+        // 尋找能得最高分的位置
         int[] bestMove = null;
         double maxScore = -99;
         for (int[] cell : empty) {
             int[][] tempBoard = copyBoard(game.getBoardState());
             int score = calculatePotentialScore(cell[0], cell[1], 2, tempBoard); //此player數值代表AI
             int opponentScore = 0;
-            // 2. 考慮對手可能得分的機會
+            // 考慮對手可能得分的機會
             for (int[] cell2 : empty) {
                 int[][] opponentTempBoard = copyBoard(tempBoard);
                 int tempScore = calculatePotentialScore(cell2[0], cell2[1], 1, opponentTempBoard); //此player數值代表玩家
@@ -78,7 +78,7 @@ public class GameAI {
                     opponentScore = tempScore;
                 }
             }
-            // 3. 綜合評估
+            // 加權評估
             double totalScore = score - (opponentScore * (empty.size() > 81/2 ? 0.3 : 0.7));
             if (totalScore > maxScore) {
                 maxScore = totalScore;
