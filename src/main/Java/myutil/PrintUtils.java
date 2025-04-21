@@ -123,8 +123,8 @@ public class PrintUtils {
             newArgs[newArgs.length - 1] = new PEnd("");
         }
         print(newArgs);
-        
-        String inputStr = scanner.nextLine();
+        String inputStr;
+        inputStr = scanner.nextLine();
         if (pSplit != null) {
             // 當有分割選項時，假設返回 String[]
             return (T) inputStr.split(pSplit.splitChar);

@@ -1,10 +1,14 @@
 package game;
-import game.ai.GameAI;
-import game.gui.GameGUI;
 import java.util.Arrays;
 import java.util.Random;
+
 import javax.swing.SwingWorker;
+
+import game.ai.GameAI;
+import game.gui.GameGUI;
+import myutil.Localization;
 import myutil.PrintUtils;
+import myutil.PrintUtils.PEnd;
 import myutil.PrintUtils.PVo;
 
 @SuppressWarnings("unused")
@@ -84,14 +88,14 @@ public final class Game {
             // 控制台模式的遊戲循環
             consolePlay();
             while (true) {
-                boolean isPlay = PrintUtils.inputAs(Boolean.class, "是否再來一局?(true:是, false:否)").get(0);
-                if (!isPlay) {
+                String isPlay = PrintUtils.input(Localization.getString("game.play_again"));/*"是否再來一局?(true:是, false:否)"*/
+                if (!isPlay.equals("y")) {
                     break;
                 }
                 Game game = new Game(false, (gameAI1 != null) ? gameAI1 : null, (gameAI2 != null) ? gameAI2 : null, true);
             }
-            PrintUtils.print("感謝你的游玩。", new PVo(10));
-            PrintUtils.print("下次見~", new PVo(10));
+            PrintUtils.print(Localization.getString("game.thank_you"), new PVo(10)); /*"感謝你的游玩。"*/
+            PrintUtils.print(Localization.getString("game.see_you_next_time"), new PVo(10)); /*"下次見~"*/
         }
     }    
     
@@ -101,23 +105,23 @@ public final class Game {
     public void setBot(int player, int difficulty) {
         if (player == 1) {
             if (gameAI1 == null || gameAI1.difficulty != difficulty) {  
-                gameAI1 = new GameAI(this, difficulty);
+                gameAI1 = new GameAI(this, difficulty, 1);
             }
             isBot[0] = 1;
         } else {
             if (gameAI2 == null || gameAI2.difficulty != difficulty) {
-                gameAI2 = new GameAI(this, difficulty);
+                gameAI2 = new GameAI(this, difficulty, 2);
             }
             isBot[1] = 1;
         }
     }
     @SuppressWarnings("CallToPrintStackTrace")
     public void consolePlay() {
-        int mode = PrintUtils.inputAs(Integer.class, "請選擇遊玩模式(1: 和Bot對戰、2: 和朋友一起玩、3: 觀看ai互鬥): ").get(0);
+        int mode = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_mode")).get(0);/*"請選擇遊玩模式(1: 和Bot對戰、2: 和朋友一起玩、3: 觀看ai互鬥): "*/
         if (mode == 1) {
             int diff1;
             while (true) {
-                diff1 = PrintUtils.inputAs(Integer.class, "請選擇Bot的難度(1: 簡單、2: 中等、3: 困難): ").get(0);
+                diff1 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", "")).get(0);/*"請選擇Bot的難度(1: 簡單、2: 中等、3: 困難): "*/
                 if (diff1 == 1 || diff1 == 2 || diff1 == 3) {
                     break;  
                 }
@@ -127,14 +131,14 @@ public final class Game {
         else if (mode == 3) {
             int diff1;
             while (true) {
-                diff1 = PrintUtils.inputAs(Integer.class, "請選擇Bot1的難度(1: 簡單、2: 中等、3: 困難): ").get(0);
+                diff1 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", 1)).get(0);/*"請選擇Bot1的難度(1: 簡單、2: 中等、3: 困難): "*/
                 if (diff1 == 1 || diff1 == 2 || diff1 == 3) {
                     break;
                 }   
             }   
             int diff2;
             while (true) {
-                diff2 = PrintUtils.inputAs(Integer.class, "請選擇Bot2的難度(1: 簡單、2: 中等、3: 困難): ").get(0);
+                diff2 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", 2)).get(0);/*"請選擇Bot2的難度(1: 簡單、2: 中等、3: 困難): "*/
                 if (diff2 == 1 || diff2 == 2 || diff2 == 3) {
                     break;
                 }
@@ -187,13 +191,13 @@ public final class Game {
 
     public int[] getPlayerMove() {
         while (true) {
-            String input = PrintUtils.input("玩家" + currentPlayer + "請輸入目標格仔的坐標, e.g:A1(不限大小寫): ");
+            String input = PrintUtils.input(Localization.getString("game.input_coordinate", currentPlayer));/*"玩家" + currentPlayer + "請輸入目標格仔的坐標, e.g:A1(不限大小寫): "*/
             // 移除所有空格並轉換為大寫
             input = input.replaceAll("\\s+", "").toUpperCase();
 
             // 檢查輸入格式：字母後跟數字
             if (!input.matches("[A-Z]\\d+")) {
-                PrintUtils.print("格式不正確,請輸入有效的坐標(e.g:A1)", new PVo(10));
+                PrintUtils.print(Localization.getString("game.invalid_input"), new PVo(10));/*"格式不正確,請輸入有效的坐標(e.g:A1)"*/
                 continue;
             }
 
@@ -203,7 +207,7 @@ public final class Game {
 
             // 檢查數字範圍
             if (number < 1 || number > BOARD_SIZE || letter < 'A' || letter > (BOARD_SIZE - 1) + 'A') {
-                PrintUtils.print("輸入坐標超出範圍,請輸入有效的坐標(e.g:A1)", new PVo(10));
+                PrintUtils.print(Localization.getString("game.input_out_of_range"), new PVo(10));/*"輸入坐標超出範圍,請輸入有效的坐標(e.g:A1)"*/
                 continue;
             }
 
@@ -212,10 +216,10 @@ public final class Game {
             int row = number - 1;
             if (board.getCell(row, col) != 0) {
                 if (board.getCell(row, col) == currentPlayer) {
-                    PrintUtils.print("你已經在這裏擺過棋子了,請輸入有效的坐標(e.g:A1)", new PVo(10));
+                    PrintUtils.print(Localization.getString("game.already_placed"), new PVo(10));/*"你已經在這裏擺過棋子了,請輸入有效的坐標(e.g:A1)"*/
                     continue;
                 } else {
-                    PrintUtils.print("你不能覆蓋別人的棋子,請輸入有效的坐標(e.g:A1)", new PVo(10));
+                    PrintUtils.print(Localization.getString("game.cannot_cover"), new PVo(10));/*"你不能覆蓋別人的棋子,請輸入有效的坐標(e.g:A1)"*/
                     continue;
                 }
             }
@@ -233,7 +237,15 @@ public final class Game {
 
     public void displayGameStatus() {
         // 顯示分數
-        PrintUtils.print((isBot(1) ? "AI" : "玩家") + "1(O)得分: " + playerScores[0] + " " + (isBot(2) ? "AI" : "玩家") + "2(X)得分: " + playerScores[1]);
+        for (int i = 1; i <= 2; i++) {
+            if (isBot(i)) {
+                PrintUtils.print(Localization.getString("game.display_score_ai", (i == 1) ? "1(O)" : "2(X)", playerScores[i - 1]), new PEnd(""));
+            } else {
+                PrintUtils.print(Localization.getString("game.display_score", (i == 1) ? "1(O)" : "2(X)", playerScores[i - 1]), new PEnd(""));
+            }
+            System.out.print(" ");
+        }
+        System.out.println();
         // 顯示棋盤
         int[][] DBoard = board.getBoard();
         boolean[][] markedGrid = board.getMarkedGrid();
@@ -308,16 +320,20 @@ public final class Game {
 
     public void displayGameResult() {
         if (winner == -1) {
-            PrintUtils.print("遊戲結束，平手！", new PVo(10));
+            PrintUtils.print(Localization.getString("game.draw"), new PVo(10));
         } else {
-            PrintUtils.print("遊戲結束，玩家" + (winner) + "獲勝！", new PVo(10));
+            if (isBot(winner)) {
+                PrintUtils.print(Localization.getString("game.winner_ai", (winner == 1) ? "1(O)" : "2(X)"), new PVo(10));
+            } else {
+                PrintUtils.print(Localization.getString("game.winner", (winner == 1) ? "1(O)" : "2(X)"), new PVo(10));
+            }
         }
     }
 
     private int maxScorePlayer() {
         int maxScore = 0;
         int maxScorePlayer = -1;
-        System.out.println("playerScores: " + Arrays.toString(playerScores));
+        System.out.println(Localization.getString("game.win_playerScores") + Arrays.toString(playerScores));
         for (int i = 0; i < 2; i++) {
             if (playerScores[i] == maxScore) {
                 maxScorePlayer = -1;
@@ -442,4 +458,14 @@ public final class Game {
         return gameAI2;
     }
     
+    public int getScoreDiff(int player) {
+        if (player == 1) {
+            return playerScores[0] - playerScores[1];
+        } else {
+            return playerScores[1] - playerScores[0];
+        }
+    }
+    public int getPlayerScore(int player) {
+        return playerScores[player - 1];
+    }
 }

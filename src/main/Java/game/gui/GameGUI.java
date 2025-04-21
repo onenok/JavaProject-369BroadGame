@@ -1,13 +1,43 @@
 package game.gui;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Path2D;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
-import javax.swing.border.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
+import javax.swing.border.AbstractBorder;
 
 import game.Game;
+import myutil.Localization;
 
 public final class GameGUI extends JFrame {
     private Game game;
@@ -127,7 +157,7 @@ public final class GameGUI extends JFrame {
                 }
 
             } catch (Exception e) {
-                System.out.println("顯示訊息時發生錯誤: " + e.getMessage());
+                System.out.println(Localization.getString("gui.show_message_error", e.getMessage()));
                 e.printStackTrace();
             }
         }
@@ -348,10 +378,10 @@ public final class GameGUI extends JFrame {
     }
     private void setAI() {
         // 顯示模式選擇對話框
-        String[] options = {"與AI遊玩", "與朋友遊玩", "觀看AI互鬥"};
+        String[] options = {Localization.getString("game.play_with_ai"), Localization.getString("game.play_with_friend"), Localization.getString("game.watch_ai")};
         int mode = JOptionPane.showOptionDialog(this,
-                "請選擇遊戲模式",
-                "模式選擇",
+                Localization.getString("gui.choose_mode"),
+                Localization.getString("gui.mode_selection"),
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
@@ -361,10 +391,10 @@ public final class GameGUI extends JFrame {
         // 根據選擇的模式進行處理
         if (mode == 0) { // 與AI遊玩
             // 顯示難度選擇對話框
-            String[] difficulties = {"簡單", "中等", "困難"};
+            String[] difficulties = {Localization.getString("game.easy"), Localization.getString("game.medium"), Localization.getString("game.hard")};
             int difficulty = JOptionPane.showOptionDialog(this,
-                    "請選擇AI難度",
-                    "難度選擇",
+                    Localization.getString("gui.choose_difficulty", ""),
+                    Localization.getString("gui.difficulty_selection", ""),
                     JOptionPane.DEFAULT_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
@@ -375,10 +405,10 @@ public final class GameGUI extends JFrame {
             game.setBot(1, difficulty + 1); // 難度選項索引+1對應實際難度值
         } else if (mode == 2) { // 觀看AI互鬥
             // 顯示第一個AI的難度選擇
-            String[] difficulties = {"簡單", "中等", "困難"};
+            String[] difficulties = {Localization.getString("game.easy"), Localization.getString("game.medium"), Localization.getString("game.hard")};
             int difficulty1 = JOptionPane.showOptionDialog(this,
-                    "請選擇第一個AI的難度",
-                    "AI1難度選擇",
+                    Localization.getString("gui.choose_difficulty", "1"),
+                    Localization.getString("gui.difficulty_selection", "1"),
                     JOptionPane.DEFAULT_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
@@ -387,8 +417,8 @@ public final class GameGUI extends JFrame {
 
             // 顯示第二個AI的難度選擇
             int difficulty2 = JOptionPane.showOptionDialog(this,
-                    "請選擇第二個AI的難度",
-                    "AI2難度選擇",
+                    Localization.getString("gui.choose_difficulty", "2"),
+                    Localization.getString("gui.difficulty_selection", "2"),
                     JOptionPane.DEFAULT_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
@@ -404,7 +434,7 @@ public final class GameGUI extends JFrame {
         // 初始化遊戲
         this.game = game;
         setAI();
-        setTitle("369 棋盤遊戲");
+        setTitle(Localization.getString("title"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(600, 600));
         setPreferredSize(new Dimension(800, 800));
@@ -541,7 +571,7 @@ public final class GameGUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(BG_COLOR);
         panel.setBorder(new RoundedCornerBorder(CORNER_RADIUS, CORNER_RADIUS, 0, 0, BG_COLOR));
-        JLabel titleLabel = new JLabel("369 棋盤遊戲", JLabel.CENTER);
+        JLabel titleLabel = new JLabel(Localization.getString("title"), JLabel.CENTER);
         titleLabel.setFont(new Font("微軟正黑體", Font.BOLD, 24));
 
         // 創建按鈕面板
@@ -549,13 +579,13 @@ public final class GameGUI extends JFrame {
         buttonPanel.setBackground(BG_COLOR);
 
         // 創建規則說明按鈕
-        JButton rulesButton = new JButton("遊戲規則");
+        JButton rulesButton = new JButton(Localization.getString("gui.rules"));
         rulesButton.setFont(new Font("微軟正黑體", Font.BOLD, 14));
         rulesButton.setFocusPainted(false);
         rulesButton.addActionListener(e -> showGameRules());
 
         // 創建重新開始按鈕
-        JButton restartButton = new JButton("重新開始");
+        JButton restartButton = new JButton(Localization.getString("gui.restart"));
         restartButton.setFont(new Font("微軟正黑體", Font.BOLD, 14));
         restartButton.setFocusPainted(false);
         restartButton.addActionListener(e -> restartGame());
@@ -576,17 +606,17 @@ public final class GameGUI extends JFrame {
         panel.setBorder(new RoundedCornerBorder(0, 0, CORNER_RADIUS, CORNER_RADIUS, BG_COLOR));
         panel.setBackground(BG_COLOR);
 
-        playerTurnLabel = new JLabel("當前玩家: 玩家1", JLabel.CENTER);
+        playerTurnLabel = new JLabel(Localization.getString("gui.current_player") + game.getCurrentPlayer(), JLabel.CENTER);
         playerTurnLabel.setFont(new Font("微軟正黑體", Font.BOLD, 18));
 
         JPanel scorePanel = new JPanel(new GridLayout(1, 2));
         scorePanel.setBackground(BG_COLOR);
 
-        player1ScoreLabel = new JLabel("玩家1得分: 0", JLabel.CENTER);
+        player1ScoreLabel = new JLabel(Localization.getString("gui.player_score", "1", "0"), JLabel.CENTER);
         player1ScoreLabel.setFont(new Font("微軟正黑體", Font.PLAIN, 16));
         player1ScoreLabel.setForeground(PLAYER1_COLOR);
 
-        player2ScoreLabel = new JLabel("玩家2得分: 0", JLabel.CENTER);
+        player2ScoreLabel = new JLabel(Localization.getString("gui.player_score", "2", "0"), JLabel.CENTER);
         player2ScoreLabel.setFont(new Font("微軟正黑體", Font.PLAIN, 16));
         player2ScoreLabel.setForeground(PLAYER2_COLOR);
 
@@ -657,7 +687,7 @@ public final class GameGUI extends JFrame {
             return;
         if (!game.makeMove(row, col)) {
             // 使用修改後的showFloatingMessage類來顯示錯誤（使用默認上升動畫）
-            showFM("這個位置已經有棋子了", row, col, ERROR_COLOR);
+            showFM(Localization.getString("gui.already_placed"), row, col, ERROR_COLOR);
             return;
         }
         updating = true;
@@ -714,7 +744,6 @@ public final class GameGUI extends JFrame {
     }
 
     // 啟動標記動畫
-    @SuppressWarnings("")
     private void startMarkingAnimation(
             Map<Integer, List<int[]>> directionMarks,
             Map<Integer, Integer> directionScores
@@ -754,12 +783,12 @@ public final class GameGUI extends JFrame {
                 if (score > 0) {
                     int[] midPoint = game.getDirectionMiddlePosition(currentDirection);
                     if (midPoint != null) {
-                        // 當前玩家（因為已經切換了玩家，所以需要取反向的玩家）
+                        // 當前玩家（因為已經切換了玩家，所以需要反選玩家）
                         int player = (game.getCurrentPlayer() == 1) ? 2 : 1;
                         Color scoreColor = (player == 1) ? PLAYER1_COLOR : PLAYER2_COLOR;
                         
                         // 使用放大動畫效果顯示得分
-                        showFM("+" + score + "分", midPoint[0], midPoint[1], scoreColor);
+                        showFM("+" + score + Localization.getString("gui.score"), midPoint[0], midPoint[1], scoreColor);
                     }
                 }
                 
@@ -794,10 +823,21 @@ public final class GameGUI extends JFrame {
     public void updateStatus() {
         int currentPlayer = game.getCurrentPlayer();
         int[] scores = game.getPlayerScores();
-
-        playerTurnLabel.setText("當前玩家: " + (game.isBot(currentPlayer) ? "AI" : "玩家") + currentPlayer + "(" + (currentPlayer == 1 ? "O" : "X") + ")");
-        player1ScoreLabel.setText((game.isBot(1) ? "AI" : "玩家") + "1(O)得分: " + scores[0]);
-        player2ScoreLabel.setText((game.isBot(2) ? "AI" : "玩家") + "2(X)得分: " + scores[1]);
+        if (game.isBot(currentPlayer)) {
+            playerTurnLabel.setText(Localization.getString("gui.current_player") + "AI" + currentPlayer + "(" + (currentPlayer == 1 ? "O" : "X") + ")");
+        } else {
+            playerTurnLabel.setText(Localization.getString("gui.current_player") + Localization.getString("game.player") + currentPlayer + "(" + (currentPlayer == 1 ? "O" : "X") + ")");
+        }
+        if (game.isBot(1)) {
+            player1ScoreLabel.setText(Localization.getString("gui.ai_score", "1", scores[0]));
+        } else {
+            player1ScoreLabel.setText(Localization.getString("gui.player_score", "1", scores[0]));
+        }
+        if (game.isBot(2)) {
+            player2ScoreLabel.setText(Localization.getString("gui.ai_score", "2", scores[1]));
+        } else {
+            player2ScoreLabel.setText(Localization.getString("gui.player_score", "2", scores[1]));
+        }
 
         // 更新玩家回合指示 (更改文字顏色)
         if (currentPlayer == 1) {
@@ -821,17 +861,17 @@ public final class GameGUI extends JFrame {
     public void showGameResult() {
         int winner = game.getWinner();
         System.out.println("winner: " + winner);
-        String message = "遊戲結束！" 
+        String message = Localization.getString("gui.game_over") 
         + "\n\n" 
-        + (game.isBot(1) ? "AI" : "玩家") + "1得分: " + game.getPlayerScores()[0] 
+        + (game.isBot(1) ? Localization.getString("gui.ai_score", "1", game.getPlayerScores()[0]) : Localization.getString("gui.player_score", "1", game.getPlayerScores()[0])) 
         + "\n" 
-        + (game.isBot(2) ? "AI" : "玩家") + "2得分: " + game.getPlayerScores()[1] 
+        + (game.isBot(2) ? Localization.getString("gui.ai_score", "2", game.getPlayerScores()[1]) : Localization.getString("gui.player_score", "2", game.getPlayerScores()[1])) 
         + "\n\n" 
-        + (winner == -1 ? "平手！" : (game.isBot(winner) ? "AI" : "玩家") + (winner) + "獲勝！");
+        + (winner == -1 ? Localization.getString("gui.draw") : (game.isBot(winner) ? Localization.getString("gui.ai_win", winner) : Localization.getString("gui.player_win", winner)));
 
         int option = JOptionPane.showConfirmDialog(this,
-                message + "\n\n是否要再玩一局？",
-                "遊戲結束", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                message + "\n\n" + Localization.getString("gui.play_again"),
+                Localization.getString("gui.game_over"), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
         if (option == JOptionPane.YES_OPTION) {
             restartGame();
@@ -847,8 +887,8 @@ public final class GameGUI extends JFrame {
         // 如果遊戲尚未結束，確認是否重新開始
         if (!game.isGameOver()) {
             option = JOptionPane.showConfirmDialog(this,
-                    "確定要重新開始遊戲嗎？目前的進度將會丟失。",
-                    "重新開始", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    Localization.getString("gui.issure_to_restart"),
+                    Localization.getString("gui.restart"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         }
 
         if (option == JOptionPane.YES_OPTION) {
@@ -869,19 +909,7 @@ public final class GameGUI extends JFrame {
 
     // 顯示遊戲規則
     private void showGameRules() {
-        String rules = """
-                遊戲規則：
-
-                1. 遊戲在9x9的棋盤上進行
-                2. 玩家輪流在空位放置棋子（玩家1為O，玩家2為X）
-                3. 計分規則：
-                   - 當形成3的倍數（3、6、9）的連續棋子時可得分
-                   - 每次落子後，檢查4個方向（水平、垂直、左上至右下、右上至左下）的連續棋子
-                   - 如果連續棋子數是3的倍數，則得到相應分數（即棋子數）
-                   - 得分的棋子會被金色標記
-                   - 可以同時在多個方向得分
-                4. 當棋盤下滿後，得分最高的玩家獲勝,如果平手則平手
-                """;
+        String rules = Localization.getString("gui.rules.text");
 
         JTextArea textArea = new JTextArea(rules);
         textArea.setEditable(false);
@@ -892,6 +920,6 @@ public final class GameGUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(400, 300));
 
-        JOptionPane.showMessageDialog(this, scrollPane, "遊戲規則", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, scrollPane, Localization.getString("gui.rules"), JOptionPane.INFORMATION_MESSAGE);
     }
 }

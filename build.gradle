@@ -24,6 +24,8 @@ jar {
     }
 }
 
+compileJava.options.encoding = 'UTF-8'
+
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
@@ -33,5 +35,31 @@ tasks.withType(Test) {
 }
 
 run {
-    systemProperty "file.encoding", "UTF-8"
+    // 清空預設的 run 任務內容
 }
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/Java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// 新增自定義任務來執行 run_program.bat
+task runWithBatch(type: Exec) {
+    workingDir = projectDir // 設定工作目錄為專案根目錄
+    commandLine 'cmd', '/c', 'run_program.bat' // 執行 run_program.bat
+}
+
+// 將 runWithBatch 任務與 run 任務綁定
+run.dependsOn runWithBatch
