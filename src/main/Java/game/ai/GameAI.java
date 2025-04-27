@@ -81,7 +81,9 @@ public class GameAI {
         for (int[] cell : empty) {
             int[][] tempBoard = copyBoard(game.getBoardState());
             int[][] result = calculatePotentialScore(cell[0], cell[1], 2, tempBoard); //此player數值代表AI
+            /* ai thinking */
             int score = result[0][0];
+            //ai thinking show
             int horizontal = result[1][0];
             int vertical = result[2][0];
             int mainDiagonal = result[3][0];
@@ -90,6 +92,9 @@ public class GameAI {
             String verticalStart = (char)(result[2][2]+65) + "" + (result[2][1]+1);
             String mainDiagonalStart = (char)(result[3][2]+65) + "" + (result[3][1]+1);
             String subDiagonalStart = (char)(result[4][2]+65) + "" + (result[4][1]+1);
+            /* ai opponent thinking */
+            int opponentScore = 0;
+            //ai thinking show
             int opponentHorizontal = 0;
             int opponentVertical = 0;
             int opponentMainDiagonal = 0;
@@ -98,7 +103,6 @@ public class GameAI {
             String opponentVerticalStart = "";
             String opponentMainDiagonalStart = "";
             String opponentSubDiagonalStart = "";
-            int opponentScore = 0;
             // 考慮對手可能得分的機會
             for (int[] cell2 : empty) {
                 if (cell2[0] == cell[0] && cell2[1] == cell[1]) {
