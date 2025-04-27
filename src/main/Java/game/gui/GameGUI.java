@@ -48,18 +48,18 @@ public final class GameGUI extends JFrame {
     private JLabel player2ScoreLabel;
     private boolean updating = false;
     private final int BOARD_SIZE = 9;
-    private final Color PLAYER1_COLOR = new Color(70, 130, 180); // 藍色
-    private final Color PLAYER2_COLOR = new Color(220, 20, 60); // 紅色
-    private final Color PLAYER1_SELECTED_HIGHLIGHT = new Color(100, 149, 237); // 淺藍色 (選中)
-    private final Color PLAYER2_SELECTED_HIGHLIGHT = new Color(255, 160, 122); // 淺粉紅色 (選中)
-    private final Color MARKED_COLOR = new Color(255, 215, 0); // 金色 (標記3倍數)
-    private final Color BG_COLOR = new Color(255, 255, 255); // 白色
-    private final Color BOARD_BACKGROUND = new Color(240, 240, 240); // 淺灰色
-    private final Color GRID_COLOR = new Color(120, 120, 120); // 深灰色
-    private final Color ERROR_COLOR = new Color(255, 0, 0); // 錯誤訊息顏色
-    private final int CORNER_RADIUS = 15; // 圓角半徑
-    // 用於顯示浮動錯誤訊息
-    private JPanel glassPane;
+    private final Color PLAYER1_COLOR = new Color(70, 130, 180); // Blue
+    private final Color PLAYER2_COLOR = new Color(220, 20, 60); // Red
+    private final Color PLAYER1_SELECTED_HIGHLIGHT = new Color(100, 149, 237); // Light blue (selected)
+    private final Color PLAYER2_SELECTED_HIGHLIGHT = new Color(255, 160, 122); // Light pink (selected)
+    private final Color MARKED_COLOR = new Color(255, 215, 0); // Gold (marking)
+    private final Color BG_COLOR = new Color(255, 255, 255); // White
+    private final Color BOARD_BACKGROUND = new Color(240, 240, 240); // Light gray
+    private final Color GRID_COLOR = new Color(120, 120, 120); // Dark gray
+    private final Color ERROR_COLOR = new Color(255, 0, 0); // Error message color
+    private final int CORNER_RADIUS = 15; // Corner radius
+    
+    private JPanel glassPane;// Used for displaying floating error messages
 
     private class showFloatingMessage {
         private JLabel messageLabel;
@@ -68,28 +68,28 @@ public final class GameGUI extends JFrame {
         private int col;
         private Color color;
         private Timer floatingTimer;
-        private final GameGUI parentFrame; // 存儲外部類引用
-        private int animationType; // 動畫類型：0=上升淡出，1=放大淡出
+        private final GameGUI parentFrame; // Stores reference to outer class
+        private int animationType; // Animation type: 0=fade up, 1=zoom out
 
-        // 顯示浮動訊息（默認上升淡出動畫）
+        // Show floating message (default fade up animation)
         private showFloatingMessage(String message, int row, int col, Color color) {
             this(message, row, col, color, 0);
         }
 
-        // 顯示浮動訊息（可指定動畫類型）
+        // Show floating message (with specified animation type)
         private showFloatingMessage(String message, int row, int col, Color color, int animationType) {
             this.message = message;
             this.row = row;
             this.col = col;
             this.color = color;
-            this.parentFrame = GameGUI.this; // 保存對外部類的引用
+            this.parentFrame = GameGUI.this; // Save reference to outer class
             this.animationType = animationType;
 
-            // 初始化浮動訊息標籤 - 使用透明面板作為背景
+            // Initialize floating message label - use transparent panel as background
             JPanel transparentPanel = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
-                    // 不調用super.paintComponent，保持完全透明
+                    // Don't call super.paintComponent to keep fully transparent
                 }
 
                 @Override
@@ -99,41 +99,41 @@ public final class GameGUI extends JFrame {
             };
             transparentPanel.setLayout(new BorderLayout());
 
-            // 創建標籤
+            // Create label
             messageLabel = new JLabel(message, JLabel.CENTER);
             messageLabel.setFont(new Font("微軟正黑體", Font.BOLD, 16));
             messageLabel.setForeground(color);
             messageLabel.setOpaque(false);
 
-            // 將標籤添加到透明面板
+            // Add label to transparent panel
             transparentPanel.add(messageLabel, BorderLayout.CENTER);
             transparentPanel.setOpaque(false);
             transparentPanel.setVisible(false);
 
-            // 添加到glassPane
+            // Add to glassPane
             glassPane.add(transparentPanel);
 
-            // 顯示訊息
+            // Display message
             displayMessage(transparentPanel);
         }
 
         @SuppressWarnings("CallToPrintStackTrace")
         private void displayMessage(JPanel messagePanel) {
             try {
-                // 取得按鈕的在螢幕上的絕對位置
+                // Get button's absolute screen position
                 Point buttonLocationOnScreen = buttons[row][col].getLocationOnScreen();
-                // 取得視窗在螢幕上的絕對位置
-                Point frameLocationOnScreen = parentFrame.getLocationOnScreen(); // 使用外部類引用
+                // Get window's absolute screen position
+                Point frameLocationOnScreen = parentFrame.getLocationOnScreen(); // Use outer class reference
 
-                // 計算按鈕相對於視窗的位置
+                // Calculate button position relative to window
                 int buttonX = buttonLocationOnScreen.x - frameLocationOnScreen.x;
                 int buttonY = buttonLocationOnScreen.y - frameLocationOnScreen.y;
 
-                // 設置訊息標籤位置（顯示在按鈕上方中央）
+                // Set message label position (centered above button)
                 FontMetrics fm = messageLabel.getFontMetrics(messageLabel.getFont());
                 int textWidth = fm.stringWidth(message);
 
-                // 設置訊息標籤位置（顯示在按鈕上方中央）
+                // Set message label position (centered above button)
                 int labelWidth = Math.max(textWidth + 20, 200);
                 int labelHeight = 30;
                 messagePanel.setBounds(
@@ -142,17 +142,17 @@ public final class GameGUI extends JFrame {
                         labelWidth,
                         labelHeight);
 
-                // 設置訊息和顯示
+                // Set message and display
                 messageLabel.setText(message);
                 messageLabel.setForeground(color);
                 messagePanel.setVisible(true);
 
-                // 根據動畫類型選擇不同的動畫效果
+                // Choose different animation effects based on animation type
                 if (animationType == 1) {
-                    // 創建動畫效果 - 放大淡出
+                    // Create animation effect - zoom out
                     createZoomOutAnimation(messagePanel);
                 } else {
-                    // 創建動畫效果 - 上升淡出（默認）
+                    // Create animation effect - fade up (default)
                     createFadeUpAnimation(messagePanel);
                 }
 
@@ -162,7 +162,7 @@ public final class GameGUI extends JFrame {
             }
         }
 
-        // 上升淡出動畫
+        // Fade up animation
         private void createFadeUpAnimation(JPanel messagePanel) {
             final int startY = messagePanel.getY();
             final float[] alpha = { 1.0f };
@@ -174,10 +174,10 @@ public final class GameGUI extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     steps++;
 
-                    // 上移動畫
+                    // Move up animation
                     messagePanel.setLocation(messagePanel.getX(), startY - steps * 2);
 
-                    // 透明度漸減
+                    // Fade out
                     alpha[0] = Math.max(0, 1.0f - (steps * 0.05f));
                     Color newColor = new Color(
                             color.getRed(),
@@ -186,7 +186,7 @@ public final class GameGUI extends JFrame {
                             (int) (alpha[0] * 255));
                     messageLabel.setForeground(newColor);
 
-                    // 動畫結束，隱藏標籤
+                    // Animation end, hide label
                     if (steps >= 20) {
                         messagePanel.setVisible(false);
                         ((Timer) e.getSource()).stop();
@@ -199,7 +199,7 @@ public final class GameGUI extends JFrame {
             floatingTimer.start();
         }
 
-        // 放大淡出動畫（適用於得分提示）
+        // Zoom out animation (for score notifications)
         private void createZoomOutAnimation(JPanel messagePanel) {
             final float[] alpha = { 1.0f };
             final float[] scale = { 1.0f };
@@ -216,19 +216,19 @@ public final class GameGUI extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     steps++;
 
-                    // 縮放動畫
+                    // Scale animation
                     scale[0] = 1.0f + (steps * 0.1f);
                     int newSize = (int) (originalFont.getSize() * scale[0]);
                     messageLabel.setFont(new Font(originalFont.getFamily(), originalFont.getStyle(), newSize));
 
-                    // 重新計算位置，確保訊息保持在中央
+                    // Recalculate position to keep message centered
                     int newWidth = (int) (startWidth * scale[0]);
                     int newHeight = (int) (startHeight * scale[0]);
                     int newX = startX - (newWidth - startWidth) / 2;
                     int newY = startY - (newHeight - startHeight) / 2;
                     messagePanel.setBounds(newX, newY, newWidth, newHeight);
 
-                    // 透明度漸減
+                    // Fade out
                     alpha[0] = Math.max(0, 1.0f - (steps * 0.05f));
                     Color newColor = new Color(
                             color.getRed(),
@@ -237,7 +237,7 @@ public final class GameGUI extends JFrame {
                             (int) (alpha[0] * 255));
                     messageLabel.setForeground(newColor);
 
-                    // 動畫結束，隱藏標籤
+                    // Animation end, hide label
                     if (steps >= 20) {
                         messagePanel.setVisible(false);
                         ((Timer) e.getSource()).stop();
@@ -255,7 +255,7 @@ public final class GameGUI extends JFrame {
     public void showFM(String message, int row, int col, Color color) {
         showFloatingMessage a = new showFloatingMessage(message, row, col, color);
     }
-    // 自定義圓角邊框類
+    // Custom rounded corner border class
     private class RoundedCornerBorder extends AbstractBorder {
         private final int topLeftRadius;
         private final int topRightRadius;
@@ -277,33 +277,33 @@ public final class GameGUI extends JFrame {
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // 創建圓角矩形路徑
+            // Create rounded rectangle path
             Path2D path = createRoundRectPath(x, y, width, height);
 
-            // 首先，清除整個區域（使區域變透明）
+            // First, clear the entire area (make it transparent)
             if (c.getParent() != null) {
-                // 獲取父級背景色，用於在正確的背景上繪製
+                // Get parent background color for correct background drawing
                 Color parentBackground = c.getParent().getBackground();
                 g2d.setColor(parentBackground);
                 g2d.fillRect(x, y, width, height);
             }
 
-            // 繪製圓角填充區域
+            // Draw rounded fill area
             g2d.setColor(c.getBackground());
             g2d.fill(path);
 
-            // 繪製邊框
+            // Draw border
             g2d.setColor(color);
             g2d.draw(path);
 
             g2d.dispose();
         }
 
-        // 創建圓角矩形路徑
+        // Create rounded rectangle path
         private Path2D createRoundRectPath(int x, int y, int width, int height) {
             Path2D path = new Path2D.Double();
 
-            // 左上角
+            // Top-left corner
             if (topLeftRadius > 0) {
                 path.moveTo(x, y + topLeftRadius);
                 path.quadTo(x, y, x + topLeftRadius, y);
@@ -311,40 +311,40 @@ public final class GameGUI extends JFrame {
                 path.moveTo(x, y);
             }
 
-            // 右上角
+            // Top-right corner
             if (topRightRadius > 0) {
-                // 頂部線條到右上角(預留弧線位置)
+                // Top line to top-right corner (leave space for curve)
                 path.lineTo(x + width - topRightRadius, y);
                 path.quadTo(x + width, y, x + width, y + topRightRadius);
             } else {
-                // 頂部線條到右上角
+                // Top line to top-right corner
                 path.lineTo(x + width, y);
             }
 
-            // 右下角
+            // Bottom-right corner
             if (bottomRightRadius > 0) {
-                // 右側線條到右下角(預留弧線位置)
+                // Right line to bottom-right corner (leave space for curve)
                 path.lineTo(x + width, y + height - bottomRightRadius);
                 path.quadTo(x + width, y + height, x + width - bottomRightRadius, y + height);
             } else {
-                // 右側線條到右下角
+                // Right line to bottom-right corner
                 path.lineTo(x + width, y + height);
             }
 
-            // 左下角
+            // Bottom-left corner
             if (bottomLeftRadius > 0) {
-                // 底部線條到左下角(預留弧線位置)
+                // Bottom line to bottom-left corner (leave space for curve)
                 path.lineTo(x + bottomLeftRadius, y + height);
                 path.quadTo(x, y + height, x, y + height - bottomLeftRadius);
             } else {
-                // 底部線條到左下角
+                // Bottom line to bottom-left corner
                 path.lineTo(x, y + height);
             }
 
-            // 左側線條回到起點
+            // Left line back to start
             path.lineTo(x, y + topLeftRadius);
 
-            // 關閉路徑
+            // Close path
             path.closePath();
 
             return path;
@@ -352,23 +352,23 @@ public final class GameGUI extends JFrame {
 
         @Override
         public boolean isBorderOpaque() {
-            return false; // 設置為非不透明，以便正確處理透明度
+            return false; // Set to non-opaque for proper transparency handling
         }
 
         @Override
         public Insets getBorderInsets(Component c) {
-            // 返回適當的內邊距，確保每個方向有足夠空間顯示圓角
+            // Return appropriate insets to ensure enough space for rounded corners
             return new Insets(
-                    Math.max(topLeftRadius, topRightRadius), // 頂部需要考慮左上角和右上角的較大值
-                    Math.max(topLeftRadius, bottomLeftRadius), // 左側需要考慮左上角和左下角的較大值
-                    Math.max(bottomLeftRadius, bottomRightRadius), // 底部需要考慮左下角和右下角的較大值
-                    Math.max(topRightRadius, bottomRightRadius) // 右側需要考慮右上角和右下角的較大值
+                    Math.max(topLeftRadius, topRightRadius), // Top needs to consider larger of top-left and top-right
+                    Math.max(topLeftRadius, bottomLeftRadius), // Left needs to consider larger of top-left and bottom-left
+                    Math.max(bottomLeftRadius, bottomRightRadius), // Bottom needs to consider larger of bottom-left and bottom-right
+                    Math.max(topRightRadius, bottomRightRadius) // Right needs to consider larger of top-right and bottom-right
             );
         }
 
         @Override
         public Insets getBorderInsets(Component c, Insets insets) {
-            // 更新現有的內邊距對象
+            // Update existing insets object
             insets.top = Math.max(topLeftRadius, topRightRadius);
             insets.left = Math.max(topLeftRadius, bottomLeftRadius);
             insets.bottom = Math.max(bottomLeftRadius, bottomRightRadius);
@@ -377,7 +377,7 @@ public final class GameGUI extends JFrame {
         }
     }
     private void setAI() {
-        // 顯示模式選擇對話框
+        // Show mode selection dialog
         String[] options = {Localization.getString("game.play_with_ai"), Localization.getString("game.play_with_friend"), Localization.getString("game.watch_ai")};
         int mode = JOptionPane.showOptionDialog(this,
                 Localization.getString("gui.choose_mode"),
@@ -388,9 +388,9 @@ public final class GameGUI extends JFrame {
                 options,
                 options[0]);
 
-        // 根據選擇的模式進行處理
-        if (mode == 0) { // 與AI遊玩
-            // 顯示難度選擇對話框
+        // Handle selected mode
+        if (mode == 0) { // Play with AI
+            // Show difficulty selection dialog
             String[] difficulties = {Localization.getString("game.easy"), Localization.getString("game.medium"), Localization.getString("game.hard")};
             int difficulty = JOptionPane.showOptionDialog(this,
                     Localization.getString("gui.choose_difficulty", ""),
@@ -401,10 +401,10 @@ public final class GameGUI extends JFrame {
                     difficulties,
                     difficulties[0]);
 
-            // 設置AI難度
-            game.setBot(1, difficulty + 1); // 難度選項索引+1對應實際難度值
-        } else if (mode == 2) { // 觀看AI互鬥
-            // 顯示第一個AI的難度選擇
+            // Set AI difficulty
+            game.setBot(1, difficulty + 1); // Difficulty option index +1 corresponds to actual difficulty value
+        } else if (mode == 2) { // Watch AI vs AI
+            // Show first AI difficulty selection
             String[] difficulties = {Localization.getString("game.easy"), Localization.getString("game.medium"), Localization.getString("game.hard")};
             int difficulty1 = JOptionPane.showOptionDialog(this,
                     Localization.getString("gui.choose_difficulty", "1"),
@@ -415,7 +415,7 @@ public final class GameGUI extends JFrame {
                     difficulties,
                     difficulties[0]);
 
-            // 顯示第二個AI的難度選擇
+            // Show second AI difficulty selection
             int difficulty2 = JOptionPane.showOptionDialog(this,
                     Localization.getString("gui.choose_difficulty", "2"),
                     Localization.getString("gui.difficulty_selection", "2"),
@@ -425,13 +425,13 @@ public final class GameGUI extends JFrame {
                     difficulties,
                     difficulties[0]);
 
-            // 設置兩個AI的難度
+            // Set both AI difficulties
             game.setBot(1, difficulty1 + 1);
             game.setBot(2, difficulty2 + 1);
         }
     }
     public GameGUI(Game game) {
-        // 初始化遊戲
+        // Initialize game
         this.game = game;
         setAI();
         setTitle(Localization.getString("title"));
@@ -439,7 +439,7 @@ public final class GameGUI extends JFrame {
         setMinimumSize(new Dimension(600, 600));
         setPreferredSize(new Dimension(800, 800));
 
-        // 設置glassPane用於顯示浮動訊息 - 使用完全透明的面板
+        // Set up glassPane for floating messages - using fully transparent panel
         glassPane = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -447,32 +447,32 @@ public final class GameGUI extends JFrame {
 
             @Override
             public boolean isOpaque() {
-                return false; // 確保面板完全透明
+                return false; // Ensure panel is fully transparent
             }
         };
-        glassPane.setOpaque(false); // 設為非不透明
-        glassPane.setLayout(null); // 使用絕對佈局
+        glassPane.setOpaque(false); // Set to non-opaque
+        glassPane.setLayout(null); // Use absolute layout
         setGlassPane(glassPane);
         glassPane.setVisible(true);
 
-        // 創建主面板
+        // Create main panel
         mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
         mainPanel.setBackground(PLAYER1_COLOR);
 
-        // 創建狀態面板
+        // Create status panel
         JPanel statusPanel = createStatusPanel();
         mainPanel.add(statusPanel, BorderLayout.NORTH);
 
-        // 創建標題面板
+        // Create title panel
         JPanel titlePanel = createTitlePanel();
         mainPanel.add(titlePanel, BorderLayout.SOUTH);
 
-        // 創建 棋盤及坐標標籤 面板
+        // Create board with coordinate labels panel
         JPanel boardWithLabelsPanel = new JPanel(new BorderLayout(5, 5));
         boardWithLabelsPanel.setBackground(new Color(245, 245, 245, 0));
 
-        // 創建欄標籤 (A-I)
+        // Create column labels (A-I)
         JPanel colLabelsPanel = new JPanel(new GridLayout(1, BOARD_SIZE));
         colLabelsPanel.setBackground(new Color(245, 245, 245, 0));
         for (int j = 0; j < BOARD_SIZE; j++) {
@@ -482,20 +482,20 @@ public final class GameGUI extends JFrame {
             colLabelsPanel.add(colLabel);
         }
 
-        // 創建左上角的填充面板
+        // Create top-left corner filler panel
         JPanel cornerPanel = new JPanel();
         cornerPanel.setBackground(new Color(245, 245, 245, 0));
         JLabel corner = new JLabel("  ", JLabel.RIGHT);
         corner.setFont(new Font("微軟正黑體", Font.BOLD, 16));
         cornerPanel.add(corner);
 
-        // 創建一個左側容器面板來包含角落面板和行標籤
+        // Create a left container panel to hold corner panel and row labels
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(new Color(245, 245, 245, 0));
         topPanel.add(cornerPanel, BorderLayout.WEST);
         topPanel.add(colLabelsPanel, BorderLayout.CENTER);
 
-        // 創建列標籤 (1-9)
+        // Create row labels (1-9)
         JPanel rowLabelsPanel = new JPanel(new GridLayout(BOARD_SIZE, 1));
         rowLabelsPanel.setBackground(new Color(0, 0, 0, 0));
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -505,26 +505,26 @@ public final class GameGUI extends JFrame {
             rowLabelsPanel.add(rowLabel);
         }
 
-        // 創建棋盤面板
+        // Create board panel
         JPanel boardPanel = createBoardPanel();
 
-        // 添加所有面板
+        // Add all panels
         boardWithLabelsPanel.add(topPanel, BorderLayout.NORTH);
         boardWithLabelsPanel.add(rowLabelsPanel, BorderLayout.WEST);
         boardWithLabelsPanel.add(boardPanel, BorderLayout.CENTER);
-        // 添加棋盤到主面板
+        // Add board to main panel
         mainPanel.add(boardWithLabelsPanel, BorderLayout.CENTER);
 
-        // 添加組件調整監聽器
+        // Add component resize listener
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // 重新計算按鈕的尺寸
+                // Recalculate button sizes
                 updateButtonSizes();
             }
         });
 
-        // 添加到窗口
+        // Add to window
         add(mainPanel);
         pack();
         setLocationRelativeTo(null);
@@ -533,28 +533,28 @@ public final class GameGUI extends JFrame {
         }
         setVisible(true);
 
-        // 初始更新UI
+        // Initial UI update
         updateBoard();
     }
 
-    // 更新按鈕尺寸以適應窗口大小
+    // Update button sizes to fit window
     private void updateButtonSizes() {
-        // 獲取窗口的當前大小
+        // Get current window size
         int windowWidth = getWidth();
         int windowHeight = getHeight();
 
-        // 設置棋盤格子的最小尺寸
+        // Set minimum button size
         int minButtonSize = 30;
 
-        // 計算可用空間
-        int availableWidth = windowWidth - 100; // 減去邊距和標籤空間
-        int availableHeight = windowHeight - 200; // 減去頂部和底部空間
+        // Calculate available space
+        int availableWidth = windowWidth - 100; // Subtract margins and label space
+        int availableHeight = windowHeight - 200; // Subtract top and bottom space
 
-        // 計算按鈕的合適尺寸
+        // Calculate appropriate button size
         int buttonSize = Math.min(availableWidth / BOARD_SIZE, availableHeight / BOARD_SIZE);
-        buttonSize = Math.max(buttonSize, minButtonSize); // 確保不小於最小尺寸
+        buttonSize = Math.max(buttonSize, minButtonSize); // Ensure not smaller than minimum size
 
-        // 更新棋盤上的所有按鈕尺寸
+        // Update all button sizes on board
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (buttons[i][j] != null) {
@@ -563,7 +563,7 @@ public final class GameGUI extends JFrame {
             }
         }
 
-        // 重新佈局
+        // Re-layout
         revalidate();
     }
 
@@ -574,24 +574,24 @@ public final class GameGUI extends JFrame {
         JLabel titleLabel = new JLabel(Localization.getString("title"), JLabel.CENTER);
         titleLabel.setFont(new Font("微軟正黑體", Font.BOLD, 24));
 
-        // 創建按鈕面板
+        // Create button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(BG_COLOR);
 
-        // 創建規則說明按鈕
+        // Create rules button
         JButton rulesButton = new JButton(Localization.getString("gui.rules"));
         rulesButton.setFont(new Font("微軟正黑體", Font.BOLD, 14));
         rulesButton.setFocusPainted(false);
         rulesButton.addActionListener(e -> showGameRules());
 
-        // 創建重新開始按鈕
+        // Create restart button
         JButton restartButton = new JButton(Localization.getString("gui.restart"));
         restartButton.setFont(new Font("微軟正黑體", Font.BOLD, 14));
         restartButton.setFocusPainted(false);
         restartButton.addActionListener(e -> restartGame());
 
         buttonPanel.add(rulesButton);
-        buttonPanel.add(Box.createHorizontalStrut(10)); // 添加間距
+        buttonPanel.add(Box.createHorizontalStrut(10)); // Add spacing
         buttonPanel.add(restartButton);
 
         panel.add(titleLabel, BorderLayout.CENTER);
@@ -645,10 +645,10 @@ public final class GameGUI extends JFrame {
                 buttons[i][j].setBackground(BOARD_BACKGROUND);
                 buttons[i][j].setBorder(BorderFactory.createLineBorder(GRID_COLOR, 1));
 
-                // 設置按鈕坐標作為名稱 (方便區分)
+                // Set button coordinates as name (for easy identification)
                 buttons[i][j].setName(i + "," + j);
 
-                // 添加棋子放置事件
+                // Add piece placement event
                 final int row = i;
                 final int col = j;
                 buttons[i][j].addActionListener((ActionEvent e) -> {
@@ -658,7 +658,7 @@ public final class GameGUI extends JFrame {
                     handleButtonClick(row, col);
                 });
 
-                // 添加滑鼠懸停效果
+                // Add mouse hover effect
                 buttons[i][j].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseEntered(MouseEvent e) {
@@ -686,23 +686,23 @@ public final class GameGUI extends JFrame {
         if (updating)
             return;
         if (!game.makeMove(row, col)) {
-            // 使用修改後的showFloatingMessage類來顯示錯誤（使用默認上升動畫）
+            // Use modified showFloatingMessage class to display error (using default rise animation)
             showFM(Localization.getString("gui.already_placed"), row, col, ERROR_COLOR);
             return;
         }
         updating = true;
 
-        // 更新棋盤並在動畫結束後更新狀態
+        // Update board and status after animation ends
         updateBoard();
     }
 
     public void updateBoard() {
-        // 獲取需要標記的位置和分數
+        // Get positions and scores that need to be marked
         Map<Integer, List<int[]>> directionMarks = game.getDirectionMarks();
         Map<Integer, Integer> directionScores = game.getDirectionScores();
         int[][] board = game.getBoardState();
 
-        // 重置所有按鈕背景和文字
+        // Reset all button backgrounds and text
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 int cell = board[i][j];
@@ -737,36 +737,36 @@ public final class GameGUI extends JFrame {
             }
         }
 
-        // 如果有標記的位置，啟動動畫效果並在結束後更新狀態
+        // If there are positions to mark, start animation and update status after it ends
         if (!directionMarks.isEmpty()) {
             startMarkingAnimation(directionMarks, directionScores);
         }
     }
 
-    // 啟動標記動畫
+    // Start marking animation
     private void startMarkingAnimation(
             Map<Integer, List<int[]>> directionMarks,
             Map<Integer, Integer> directionScores
         ){
-        Timer markingTimer = new Timer(100, null); // 100毫秒間隔
+        Timer markingTimer = new Timer(100, null); // 100ms interval
         final int[] currentDirectionIdx = { 0 };
         final int[] currentPositionIdx = { 0 };
 
-        // 獲取所有方向的列表
+        // Get list of all directions
         Integer[] directions = directionMarks.keySet().toArray(new Integer[0]);
 
-        // 毋須標記時直接返回
+        // Return directly if no marking is needed
         if (directions.length == 0) {
             updateStatus();
             return;
         }
 
         ActionListener animationListener = (ActionEvent e) -> {
-            // 檢查是否完成所有方向
+            // Check if all directions are completed
             if (currentDirectionIdx[0] >= directions.length) {
                 markingTimer.stop();
                 
-                // 動畫完成後調用updateStatus
+                // Call updateStatus after animation completes
                 SwingUtilities.invokeLater(() -> {
                     updateStatus();
                 });
@@ -776,33 +776,33 @@ public final class GameGUI extends JFrame {
             int currentDirection = directions[currentDirectionIdx[0]];
             List<int[]> positions = directionMarks.get(currentDirection);
             
-            // 檢查是否完成當前方向的所有位置
+            // Check if all positions in current direction are completed
             if (currentPositionIdx[0] >= positions.size()) {
-                // 顯示得分動畫
+                // Show score animation
                 int score = directionScores.getOrDefault(currentDirection, 0);
                 if (score > 0) {
                     int[] midPoint = game.getDirectionMiddlePosition(currentDirection);
                     if (midPoint != null) {
-                        // 當前玩家（因為已經切換了玩家，所以需要反選玩家）
+                        // Current player (since player has switched, need to invert player)
                         int player = (game.getCurrentPlayer() == 1) ? 2 : 1;
                         Color scoreColor = (player == 1) ? PLAYER1_COLOR : PLAYER2_COLOR;
                         
-                        // 使用放大動畫效果顯示得分
+                        // Show score with zoom animation effect
                         showFM("+" + score + Localization.getString("gui.score"), midPoint[0], midPoint[1], scoreColor);
                     }
                 }
                 
-                // 進入下一個方向
+                // Move to next direction
                 currentDirectionIdx[0]++;
                 currentPositionIdx[0] = 0;
                 return;
             }
             
-            // 突出顯示當前位置
+            // Highlight current position
             int[] pos = positions.get(currentPositionIdx[0]);
             highlightButton(pos[0], pos[1]);
             
-            // 移動到下一個位置
+            // Move to next position
             currentPositionIdx[0]++;
         };
 
@@ -810,7 +810,7 @@ public final class GameGUI extends JFrame {
         markingTimer.start();
     }
 
-    // 突出顯示按鈕
+    // Highlight button
     private void highlightButton(int row, int col) {
         int cell = game.getBoardState()[row][col];
         if (cell != 4 && cell != 5) {
@@ -839,7 +839,7 @@ public final class GameGUI extends JFrame {
             player2ScoreLabel.setText(Localization.getString("gui.player_score", "2", scores[1]));
         }
 
-        // 更新玩家回合指示 (更改文字顏色)
+        // Update player turn indicator (change text color)
         if (currentPlayer == 1) {
             playerTurnLabel.setForeground(PLAYER1_COLOR);
             mainPanel.setBackground(PLAYER1_COLOR);
@@ -880,11 +880,11 @@ public final class GameGUI extends JFrame {
         }
     }
 
-    // 重新開始遊戲
+    // Restart game
     private void restartGame() {
         int option = JOptionPane.YES_OPTION;
 
-        // 如果遊戲尚未結束，確認是否重新開始
+        // If game hasn't ended, confirm restart
         if (!game.isGameOver()) {
             option = JOptionPane.showConfirmDialog(this,
                     Localization.getString("gui.issure_to_restart"),
@@ -892,7 +892,7 @@ public final class GameGUI extends JFrame {
         }
 
         if (option == JOptionPane.YES_OPTION) {
-            // 創建新的遊戲實例
+            // Create new game instance
             game = new Game(true, game.getGameAI1(), game.getGameAI2(), this, false);
             new SwingWorker<Void, Void>() {
                 @Override
@@ -903,11 +903,11 @@ public final class GameGUI extends JFrame {
                     return null;
                 }
             }.execute();
-            // 更新界面
+            // Update interface
         }
     }
 
-    // 顯示遊戲規則
+    // Show game rules
     private void showGameRules() {
         String rules = Localization.getString("gui.rules.text");
 
