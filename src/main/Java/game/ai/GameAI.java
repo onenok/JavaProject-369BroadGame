@@ -1,12 +1,12 @@
 package game.ai;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import game.Game;
 public class GameAI {
     private Game game;
-    private int id;
+    private final int id;
     public final int difficulty;
 
     public GameAI(Game game, int difficulty, int id) {
@@ -46,13 +46,13 @@ public class GameAI {
         }
     }
     private int[] mediumMode(List<int[]> empty, boolean isGUI) {
-        // 1. 尋找能得最高分的位置
+        // 1. Find the position with the highest score
         int[] bestMove = null;
         int maxScore = 0;
         
         for (int[] cell : empty) {
             int[][] tempBoard = copyBoard(game.getBoardState());
-            int score = calculatePotentialScore(cell[0], cell[1], 2, tempBoard)[0][0]; //此player數值代表AI
+            int score = calculatePotentialScore(cell[0], cell[1], 2, tempBoard)[0][0]; //This player value represents AI
             if (score > maxScore) {
                 maxScore = score;
                 bestMove = cell;
@@ -62,7 +62,7 @@ public class GameAI {
             }
         }
         
-        // 2. 如果沒有得分機會，隨機選擇
+        // 2. If no scoring opportunity, choose randomly
         if (bestMove != null) {
             return new int[]{bestMove[0], bestMove[1], 2};
         } else {
@@ -72,14 +72,14 @@ public class GameAI {
     }
 
     private int[] hardMode(List<int[]> empty, boolean isGUI) {
-        // 尋找能得最高分的位置
+        // Find the position with the highest score
         List<int[]> bestMoves = new ArrayList<>();
         int currentScoreDiff = game.getScoreDiff(id);
         int myScore = game.getPlayerScore(id);
         double maxScore = -99;
         for (int[] cell : empty) {
             int[][] tempBoard = copyBoard(game.getBoardState());
-            int[][] result = calculatePotentialScore(cell[0], cell[1], 2, tempBoard); //此player數值代表AI
+            int[][] result = calculatePotentialScore(cell[0], cell[1], 2, tempBoard); //This player value represents AI
             /* ai thinking */
             int score = result[0][0];
             //ai thinking show
@@ -102,13 +102,13 @@ public class GameAI {
             String opponentVerticalStart = "";
             String opponentMainDiagonalStart = "";
             String opponentSubDiagonalStart = "";
-            // 考慮對手可能得分的機會
+            // Consider opponent's potential scoring opportunities
             for (int[] cell2 : empty) {
                 if (cell2[0] == cell[0] && cell2[1] == cell[1]) {
                     continue;
                 }
                 int[][] opponentTempBoard = copyBoard(tempBoard);
-                int[][] tempResult = calculatePotentialScore(cell2[0], cell2[1], 1, opponentTempBoard); //此player數值代表對手
+                int[][] tempResult = calculatePotentialScore(cell2[0], cell2[1], 1, opponentTempBoard); //This player value represents opponent
                 int tempScore = tempResult[0][0];
                 int tempHorizontal = tempResult[1][0];
                 int tempVertical = tempResult[2][0];
@@ -130,12 +130,12 @@ public class GameAI {
                     opponentSubDiagonalStart = tempSubDiagonalStart;
                 }
             }
-            // 加權評估
+            // Weighted evaluation
             double weights = .5;
             if (currentScoreDiff > 0) {
-                weights /= Math.min(1.2 + (0.15 * currentScoreDiff)/myScore, 0.1);  // 領先時減少權重，加強進攻
+                weights /= Math.min(1.2 + (0.15 * currentScoreDiff)/myScore, 0.1);  // When leading, reduce weight, strengthen offense
             } else if (currentScoreDiff < 0) {
-                weights *= Math.min(1.2 - (0.15 * currentScoreDiff)/myScore, 0.1);  // 落後時增加權重，加強防守
+                weights *= Math.min(1.2 - (0.15 * currentScoreDiff)/myScore, 0.1);  // When trailing, increase weight, strengthen defense
             }
             if (empty.size() > 81/2) {
                 weights /= 0.7;
@@ -187,14 +187,14 @@ public class GameAI {
         tempBoard[row][col] = player;
         
         int totalScore = 0;
-        // 檢查四個方向
-        int[] horizontal = checkLineForScore(tempBoard, row, col, 0, 1); // 水平
+        // Check four directions
+        int[] horizontal = checkLineForScore(tempBoard, row, col, 0, 1); // Horizontal
         totalScore += horizontal[0];
-        int[] vertical = checkLineForScore(tempBoard, row, col, 1, 0); // 垂直
+        int[] vertical = checkLineForScore(tempBoard, row, col, 1, 0); // Vertical
         totalScore += vertical[0];
-        int[] mainDiagonal = checkLineForScore(tempBoard, row, col, 1, 1); // 主對角
+        int[] mainDiagonal = checkLineForScore(tempBoard, row, col, 1, 1); // Main diagonal
         totalScore += mainDiagonal[0];
-        int[] subDiagonal = checkLineForScore(tempBoard, row, col, -1, 1); // 副對角
+        int[] subDiagonal = checkLineForScore(tempBoard, row, col, -1, 1); // Sub diagonal
         totalScore += subDiagonal[0];
         return new int[][]{{totalScore}, horizontal, vertical, mainDiagonal, subDiagonal};
     }
@@ -222,7 +222,7 @@ public class GameAI {
                 }
                 break;
             }
-            if (board[r][c] != 0) { // 只要不是空位
+            if (board[r][c] != 0) { // As long as it's not empty
                 currentLength++;
             } else {
                 if (currentLength % 3 == 0) {

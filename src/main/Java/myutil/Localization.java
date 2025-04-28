@@ -10,18 +10,18 @@ import java.util.regex.Pattern;
 public class Localization {
     private static ResourceBundle bundle;
 
-    // 初始化 ResourceBundle
+    // Initialize ResourceBundle
     public static void init(Locale locale) {
         bundle = ResourceBundle.getBundle("assets.bg369.lang.bg369", locale);
     }
 
-    // 根據鍵值獲取本地化文字
+    // Get localized text based on key value
     public static String getString(String key, Object... args) {
         String value = bundle.getString(key);
-        value = resolveNestedKeys(value); // 解析鍵值嵌套
+        value = resolveNestedKeys(value); // Resolve nested keys
         try {
             if (args.length > 0) {
-                value = MessageFormat.format(value, args); // 處理佔位符
+                value = MessageFormat.format(value, args); // Handle placeholders
             }
         } catch (Exception e) {
             System.out.println("解析鍵值嵌套時發生錯誤: " + e.getMessage());
@@ -31,7 +31,7 @@ public class Localization {
         return value;
     }
 
-    // 解析鍵值嵌套
+    // Resolve nested keys
     private static String resolveNestedKeys(String value) {
         Pattern pattern = Pattern.compile("\\{(?!\\d+\\})[^}]+\\}");
         Matcher matcher = pattern.matcher(value);

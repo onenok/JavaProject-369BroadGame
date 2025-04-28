@@ -16,9 +16,9 @@ public final class Game {
     private Board board;
     private GameAI gameAI1;
     private GameAI gameAI2;
-    private int currentPlayer; // 1或2
-    private final int[] isBot; // 玩家是否為bot
-    private int[] playerScores; // 玩家得分
+    private int currentPlayer; // 1 or 2
+    private final int[] isBot; // whether player is bot
+    private int[] playerScores; // player scores
     private boolean gameOver;
     private int winner;
     private final boolean isGUI;
@@ -85,7 +85,7 @@ public final class Game {
         if (isGUI) {
             guiPlay();
         } else {
-            // 控制台模式的遊戲循環
+            // Console mode game loop
             consolePlay();
             while (true) {
                 String isPlay = PrintUtils.input(Localization.getString("game.play_again"));/*"是否再來一局?(true:是, false:否)"*/
@@ -117,11 +117,11 @@ public final class Game {
     }
     @SuppressWarnings("CallToPrintStackTrace")
     public void consolePlay() {
-        int mode = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_mode")).get(0);/*"請選擇遊玩模式(1: 和Bot對戰、2: 和朋友一起玩、3: 觀看ai互鬥): "*/
+        int mode = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_mode")).get(0);
         if (mode == 1) {
             int diff1;
             while (true) {
-                diff1 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", "")).get(0);/*"請選擇Bot的難度(1: 簡單、2: 中等、3: 困難): "*/
+                diff1 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", "")).get(0);
                 if (diff1 == 1 || diff1 == 2 || diff1 == 3) {
                     break;  
                 }
@@ -131,14 +131,14 @@ public final class Game {
         else if (mode == 3) {
             int diff1;
             while (true) {
-                diff1 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", 1)).get(0);/*"請選擇Bot1的難度(1: 簡單、2: 中等、3: 困難): "*/
+                diff1 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", 1)).get(0);
                 if (diff1 == 1 || diff1 == 2 || diff1 == 3) {
                     break;
                 }   
             }   
             int diff2;
             while (true) {
-                diff2 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", 2)).get(0);/*"請選擇Bot2的難度(1: 簡單、2: 中等、3: 困難): "*/
+                diff2 = PrintUtils.inputAs(Integer.class, Localization.getString("game.choose_difficulty", 2)).get(0);
                 if (diff2 == 1 || diff2 == 2 || diff2 == 3) {
                     break;
                 }
@@ -147,15 +147,15 @@ public final class Game {
             setBot(2, diff2);
         }
         while (!gameOver) {
-            // 顯示當前棋盤狀態
+            // Display current game board status
             displayGameStatus();
-            // 檢查遊戲是否結束（棋盤是否已滿）
+            // Check if game is over (is the board full)
             if (isBoardFull()) {
                 gameOver = true;
                 break;
             }
             int[] move;
-            // 獲取玩家輸入
+            // Get player input
             if (isBot(currentPlayer)) {
                 if (currentPlayer == 1) {
                     move = gameAI1.getBotMove(false);
@@ -174,52 +174,50 @@ public final class Game {
             int row = move[0];
             int col = move[1];
 
-            // 處理玩家移動並計算得分
+            // Process player move and calculate score
             int score = board.handleConsecutive(row, col, currentPlayer);
             playerScores[currentPlayer - 1] += score;
 
-            
-
-            // 切換玩家
+            // Switch players
             currentPlayer = (currentPlayer == 1) ? 2 : 1;
         }
 
-        // 顯示遊戲結果;
+        // Display game result
         winner = maxScorePlayer();
         displayGameResult();
     }
 
     public int[] getPlayerMove() {
         while (true) {
-            String input = PrintUtils.input(Localization.getString("game.input_coordinate", currentPlayer));/*"玩家" + currentPlayer + "請輸入目標格仔的坐標, e.g:A1(不限大小寫): "*/
-            // 移除所有空格並轉換為大寫
+            String input = PrintUtils.input(Localization.getString("game.input_coordinate", currentPlayer));
+            // Remove all spaces and convert to uppercase
             input = input.replaceAll("\\s+", "").toUpperCase();
 
-            // 檢查輸入格式：字母後跟數字
+            // Check input format: letter followed by number
             if (!input.matches("[A-Z]\\d+")) {
-                PrintUtils.print(Localization.getString("game.invalid_input"), new PVo(10));/*"格式不正確,請輸入有效的坐標(e.g:A1)"*/
+                PrintUtils.print(Localization.getString("game.invalid_input"), new PVo(10));
                 continue;
             }
 
-            // 提取字母和數字部分
+            // Extract letter and number
             char letter = input.charAt(0);
             int number = Integer.parseInt(input.substring(1));
 
-            // 檢查數字範圍
+            // Check number range
             if (number < 1 || number > BOARD_SIZE || letter < 'A' || letter > (BOARD_SIZE - 1) + 'A') {
-                PrintUtils.print(Localization.getString("game.input_out_of_range"), new PVo(10));/*"輸入坐標超出範圍,請輸入有效的坐標(e.g:A1)"*/
+                PrintUtils.print(Localization.getString("game.input_out_of_range"), new PVo(10));
                 continue;
             }
 
-            // 轉換為陣列索引
+            // Convert to array index
             int col = letter - 'A';
             int row = number - 1;
             if (board.getCell(row, col) != 0) {
                 if (board.getCell(row, col) == currentPlayer) {
-                    PrintUtils.print(Localization.getString("game.already_placed"), new PVo(10));/*"你已經在這裏擺過棋子了,請輸入有效的坐標(e.g:A1)"*/
+                    PrintUtils.print(Localization.getString("game.already_placed"), new PVo(10));
                     continue;
                 } else {
-                    PrintUtils.print(Localization.getString("game.cannot_cover"), new PVo(10));/*"你不能覆蓋別人的棋子,請輸入有效的坐標(e.g:A1)"*/
+                    PrintUtils.print(Localization.getString("game.cannot_cover"), new PVo(10));
                     continue;
                 }
             }
@@ -236,7 +234,7 @@ public final class Game {
     }
 
     public void displayGameStatus() {
-        // 顯示分數
+        // Display scores
         for (int i = 1; i <= 2; i++) {
             if (isBot(i)) {
                 PrintUtils.print(Localization.getString("game.display_score_ai", (i == 1) ? "1(O)" : "2(X)", playerScores[i - 1]), new PEnd(""));
@@ -246,9 +244,10 @@ public final class Game {
             System.out.print(" ");
         }
         System.out.println();
-        // 顯示棋盤
+        // Display game board
         int[][] DBoard = board.getBoard();
         boolean[][] markedGrid = board.getMarkedGrid();
+        // End of selection
         String output = "";
         for (int j = 0; j < DBoard[0].length; j++) {
             output += "   " + (char) ('A' + j);
@@ -349,82 +348,82 @@ public final class Game {
         return board.getEmpty();
     }
 
-    // 以下是GUI用的func
+    // Functions for GUI
 
-    // 進行一步移動
+    // Make a move
     public boolean makeMove(int row, int col) {
-        // 檢查這個位置是否已經有棋子
+        // Check if this position is already occupied
         if (board.getCell(row, col) != 0) {
             return false;
         }
 
-        // 處理移動並計算得分
+        // Process the move and calculate score
         int score = board.handleConsecutive(row, col, currentPlayer);
         playerScores[currentPlayer - 1] += score;
         displayGameStatus();
-        // 檢查遊戲是否結束
+        // Check if game is over
         if (isBoardFull()) {
             gameOver = true;
             winner = maxScorePlayer();
         }
 
-        // 切換玩家
+        // Switch players
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
 
         return true;
     }
 
-    // 獲取當前棋盤狀態
+    // Get current board state
     public int[][] getBoardState() {
         return board.getBoard();
     }
 
-    // 獲取標記網格
+    // Get marked grid
     public boolean[][] getMarkedState() {
         return board.getMarkedGrid();
     }
 
-    // 檢查遊戲是否結束
+    // Check if game is over
     public boolean isGameOver() {
         return gameOver;
     }
 
-    // 獲取當前玩家
+    // Get current player
     public int getCurrentPlayer() {
         return currentPlayer;
     }
 
-    // 獲取玩家分數
+    // Get player scores
     public int[] getPlayerScores() {
         return playerScores;
     }
 
-    // 獲取勝者
+    // Get winner
     public int getWinner() {
         return winner;
     }
 
-    // 獲取按方向分類的標記座標
+    // Get directionally classified marked coordinates
     public java.util.Map<Integer, java.util.List<int[]>> getDirectionMarks() {
         return board.getDirectionMarks();
     }
 
-    // 獲取每個方向的得分
+    // Get scores for each direction
     public java.util.Map<Integer, Integer> getDirectionScores() {
         return board.getDirectionScores();
     }
 
-    // 獲取特定方向標記的中點座標
+    // Get middle position coordinates for specific direction marks
     public int[] getDirectionMiddlePosition(int direction) {
         return board.getDirectionMiddlePosition(direction);
     }
 
-    // 獲取Board對象
+    // Get Board object
     public Board getBoard() {
         return board;
     }
 
-    // 清除標記
+    // Clear marks
     public void clearMarked() {
         board.clearMarks();
     }

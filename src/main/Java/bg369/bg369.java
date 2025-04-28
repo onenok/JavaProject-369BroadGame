@@ -1,5 +1,7 @@
 package bg369;
 import java.awt.HeadlessException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 import javax.swing.JOptionPane;
@@ -7,25 +9,26 @@ import javax.swing.JOptionPane;
 import game.Game;
 import myutil.Localization;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-
-@SuppressWarnings("unused")
+@SuppressWarnings("CallToPrintStackTrace")
 public class bg369 {
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         try {
-            // 將 System.out 設定為使用 UTF-8 編碼
+            // Set System.out to use UTF-8 encoding
             System.setOut(new PrintStream(System.out, true, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        // 測試輸出 UTF-8 字元
+        // Test output UTF-8 characters
+        System.out.println("testing if UTF-8 is using");
         System.out.println("你好，世界！");
         System.out.println("こんにちは、世界！");
         System.out.println("안녕하세요, 세계!");
+        System.out.println("The above word should be not Garbled characters.");
+
         try {
-            // 使用圖形對話框詢問語言
+            // Use a dialog box to ask for language selection
             String[] languages = {"English", "繁體中文"};
             int choice = JOptionPane.showOptionDialog(
                     null,
@@ -38,17 +41,17 @@ public class bg369 {
                     languages[0]
             );
 
-            // 根據選擇初始化語言
+            // Initialize language based on selection
             Locale locale;
             if (choice == 0) {
-                locale = new Locale("en", "US"); // 英文
+                locale = new Locale("en", "US"); // en_US
             } else {
-                locale = new Locale("zh", "TW"); // 繁體中文
+                locale = new Locale("zh", "TW"); // zh_TW
             }
             Localization.init(locale);
 
             
-            // 使用圖形對話框詢問是否使用GUI
+            // Use a dialog box to ask whether to use GUI
             String[] options = {Localization.getString("bg369.options.console"), Localization.getString("bg369.options.gui")};
             int choiceGUI = JOptionPane.showOptionDialog(
                     null,
@@ -61,14 +64,14 @@ public class bg369 {
                     options[1]
             );
             
-            // 如果用戶關閉對話框，默認GUI
+            // If user closes the dialog, default to GUI
             if (choiceGUI == -1) {
-                choiceGUI = 1; // 默認GUI
+                choiceGUI = 1; // default to GUI
             }
             final boolean useGUI = (choiceGUI == 1);
             Game game = new Game(useGUI, true);
         } catch (HeadlessException e) {
-            // 如果GUI無法啟動，回退到控制台模式
+            // If GUI fails to start, fall back to console mode
             System.out.println(Localization.getString("bg369.GUI_Failed"));
             Game game = new Game(false, true);
         }
