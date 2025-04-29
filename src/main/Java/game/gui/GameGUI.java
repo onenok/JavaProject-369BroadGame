@@ -528,9 +528,6 @@ public final class GameGUI extends JFrame {
         add(mainPanel);
         pack();
         setLocationRelativeTo(null);
-        if (game.isBot(game.getCurrentPlayer())) {
-            updating = true;
-        }
         setVisible(true);
 
         // Initial UI update
